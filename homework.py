@@ -82,7 +82,7 @@ def main():
         raise MissingTokenError(empty_token)
 
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    timestamp = 0
+    timestamp = int(time.time()) - WEEK
 
     while True:
         try:
