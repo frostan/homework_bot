@@ -82,15 +82,15 @@ def main():
         raise MissingTokenError(empty_token)
 
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    timestamp = int(time.time()) - WEEK
+    timestamp = 0
 
     while True:
         try:
             response = get_api_answer(timestamp)
             check_response(response)
-            for homework in response['homeworks']:
-                message = parse_status(homework)
-                send_message(bot, message)
+            homework = response['homeworks'][-1]
+            message = parse_status(homework)
+            send_message(bot, message)
 
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
