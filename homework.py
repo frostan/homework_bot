@@ -96,8 +96,8 @@ def main():
     while True:
         try:
             response = get_api_answer(timestamp)
+            check_response(response)
             if response['homeworks']:
-                check_response(response)
                 message = parse_status(response['homeworks'][0])
                 send_message(bot, message)
             else:
