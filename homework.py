@@ -5,9 +5,20 @@ from http import HTTPStatus
 import requests
 import telegram
 
-from constants import (ENDPOINT, HEADERS, HOMEWORK_VERDICTS, PRACTICUM_TOKEN,
-                       RETRY_PERIOD, TELEGRAM_CHAT_ID, TELEGRAM_TOKEN, WEEK)
-from exceptions import EndPointResponseError, MissingTokenError
+from constants import (
+    ENDPOINT,
+    HEADERS,
+    HOMEWORK_VERDICTS,
+    PRACTICUM_TOKEN,
+    RETRY_PERIOD,
+    TELEGRAM_CHAT_ID,
+    TELEGRAM_TOKEN,
+)
+from exceptions import (
+    EndPointResponseError,
+    MissingTokenError,
+    ListIsEmptyError
+)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -52,14 +63,14 @@ def get_api_answer(timestamp):
 
 def check_response(response):
     """Проверка запросов API."""
+    if not isinstance(response, dict):
+        raise TypeError('Ответ API не словарь.')
     try:
         home_works = response['homeworks']
     except KeyError:
         raise KeyError('Ключ "homeworks" не найден.')
     if not isinstance(home_works, list):
         raise TypeError('Ответ API не список.')
-    if not isinstance(response, dict):
-        raise TypeError('Ответ API не словарь.')
 
 
 def parse_status(homework):
@@ -77,18 +88,22 @@ def parse_status(homework):
 def main():
     """Основная логика работы бота."""
     if not check_tokens():
-        empty_token = 'Отсутствует переменная окружения.'
-        logger.critical(empty_token)
-        raise MissingTokenError(empty_token)
+        logger.critical('Отсутствует переменная окружения.')
+        raise MissingTokenError
 
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    timestamp = int(time.time()) - WEEK
+    timestamp = 0
 
     while True:
         try:
             response = get_api_answer(timestamp)
             check_response(response)
-            homework = response['homeworks'][-1]
+            homework = response['homeworks'][0]
+            if homework is None:
+                logger.error('Передан пустой список.')
+                raise ListIsEmptyError
+            current_date = response['current_date']
+            timestamp = current_date
             message = parse_status(homework)
             send_message(bot, message)
 
