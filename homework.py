@@ -17,7 +17,6 @@ from constants import (
 from exceptions import (
     EndPointResponseError,
     MissingTokenError,
-    ListIsEmptyError,
 )
 
 logger = logging.getLogger(__name__)
@@ -71,7 +70,6 @@ def check_response(response):
         raise KeyError('Ключ "homeworks" не найден.')
     if not isinstance(home_works, list):
         raise TypeError('Ответ API не список.')
-    return home_works
 
 
 def parse_status(homework):
@@ -98,13 +96,13 @@ def main():
     while True:
         try:
             response = get_api_answer(timestamp)
-            homework = check_response(response)
+            check_response(response)
+            homework = response['homeworks']
             if homework:
                 message = parse_status(homework[0])
                 send_message(bot, message)
             else:
                 logger.error('Передан пустой список.')
-                raise ListIsEmptyError
             timestamp = response.get('current_date')
         except Exception as error:
             message = f'Сбой в работе программы: {error}'

@@ -6,8 +6,3 @@ class EndPointResponseError:
 class MissingTokenError:
     """Отсутствует токен."""
     pass
-
-
-class ListIsEmptyError:
-    """Пустой список."""
-    pass
