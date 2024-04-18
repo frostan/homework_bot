@@ -13,7 +13,6 @@ from constants import (
     RETRY_PERIOD,
     TELEGRAM_CHAT_ID,
     TELEGRAM_TOKEN,
-    WEEK
 )
 from exceptions import (
     EndPointResponseError,
@@ -93,7 +92,7 @@ def main():
         raise MissingTokenError
 
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    timestamp = int(time.time()) - WEEK
+    timestamp = 0
 
     while True:
         try:
@@ -107,7 +106,6 @@ def main():
             timestamp = current_date
             message = parse_status(homework)
             send_message(bot, message)
-
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             logger.error(message)
