@@ -96,10 +96,9 @@ def main():
     while True:
         try:
             response = get_api_answer(timestamp)
-            check_response(response)
-            homework = response['homeworks']
-            if homework:
-                message = parse_status(homework[0])
+            if response['homeworks']:
+                check_response(response)
+                message = parse_status(response['homeworks'][0])
                 send_message(bot, message)
             else:
                 logger.error('Передан пустой список.')
