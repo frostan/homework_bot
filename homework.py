@@ -13,6 +13,7 @@ from constants import (
     RETRY_PERIOD,
     TELEGRAM_CHAT_ID,
     TELEGRAM_TOKEN,
+    WEEK
 )
 from exceptions import (
     EndPointResponseError,
@@ -92,13 +93,13 @@ def main():
         raise MissingTokenError
 
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    timestamp = 0
+    timestamp = int(time.time()) - WEEK
 
     while True:
         try:
             response = get_api_answer(timestamp)
             check_response(response)
-            homework = response['homeworks'][0]
+            homework = response['homeworks'][-1]
             if homework is None:
                 logger.error('Передан пустой список.')
                 raise ListIsEmptyError
