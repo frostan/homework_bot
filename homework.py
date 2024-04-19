@@ -97,12 +97,13 @@ def main():
         try:
             response = get_api_answer(timestamp)
             check_response(response)
-            if response['homeworks']:
-                message = parse_status(response['homeworks'][0])
+            homework = response['homeworks']
+            if homework:
+                message = parse_status(homework[0])
                 send_message(bot, message)
             else:
                 logger.error('Передан пустой список.')
-            timestamp = response.get('current_date')
+            timestamp = response.get('current_date', timestamp)
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             logger.error(message)
